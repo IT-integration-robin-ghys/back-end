@@ -1,0 +1,16 @@
+services:
+  integration-project-db:
+    image: postgres:16-alpine
+    container_name: integration-project-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: integrationproject
+      POSTGRES_USER: localdev
+      POSTGRES_PASSWORD: localdevpswd
+    ports:
+      - "5432:5432"
+    volumes:
+     - integration_project_db_data:/var/lib/postgresql/data
+
+volumes:
+  integration_project_db_data:
