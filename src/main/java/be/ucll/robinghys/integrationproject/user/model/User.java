@@ -3,6 +3,7 @@ package be.ucll.robinghys.integrationproject.user.model;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -16,6 +17,7 @@ public class User {
     private String username;
 
     @NotBlank(message = "Email cannot be empty.")
+    @Email(message = "Invalid email format")
     private String email;
 
     @NotBlank(message = "Password cannot be empty.")
