@@ -1,7 +1,12 @@
 package be.ucll.robinghys.integrationproject.user.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -23,11 +28,15 @@ public class User {
     @NotBlank(message = "Password cannot be empty.")
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<Terrarium> terrariums = new ArrayList<>();
+
     public User(String username, String email, String password) {
         this.id = new UserId();
         setUsername(username);
         setEmail(email);
         setPassword(password);
+        this.terrariums = new ArrayList<>();
     }
 
     protected User() {
