@@ -27,8 +27,8 @@ public class DBinitializer {
 
     @PostConstruct
     public void initialize() {
-        userRepository.deleteAll();
         terrariumRepository.deleteAll();
+        userRepository.deleteAll();
 
         String password = passwordEncoder.encode("password");
         User testUser = new User("Robin", "robin@email.com", password);
@@ -37,6 +37,7 @@ public class DBinitializer {
         Terrarium terrarium = new Terrarium("terrarium 1");
         terrarium.addHumidities(1.0);
         terrarium.addHumidities(10.0);
+        terrarium.addHumidities(10.9);
 
         terrarium.addTemperature(67.0);
         terrarium.addTemperature(67.0);
