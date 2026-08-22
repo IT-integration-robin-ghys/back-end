@@ -31,12 +31,15 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Terrarium> terrariums = new ArrayList<>();
 
+    private Role role;
+
     public User(String username, String email, String password) {
         this.id = new UserId();
         setUsername(username);
         setEmail(email);
         setPassword(password);
         this.terrariums = new ArrayList<>();
+        this.role = Role.user;
     }
 
     protected User() {
@@ -69,4 +72,9 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Role getRole() {
+        return role;
+    }
+
 }
