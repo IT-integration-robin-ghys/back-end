@@ -2,7 +2,7 @@ package be.ucll.robinghys.integrationproject.user.model;
 
 public enum Role {
     user(1),
-    administrator(2);
+    admin(2);
 
     private final int level;
 
