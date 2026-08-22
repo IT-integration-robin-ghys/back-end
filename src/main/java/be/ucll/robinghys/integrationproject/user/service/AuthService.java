@@ -64,7 +64,7 @@ public class AuthService {
     public AuthenticationResponse loginUser(String email, String password) {
 
         authValidationService.validateEmail(email);
-        User user = userRepository.findFirstByEmail(email);
+        User user = userService.findUserByEmail(email);
 
         BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
 
