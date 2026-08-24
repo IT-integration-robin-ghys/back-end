@@ -32,6 +32,9 @@ public class TerrariumRequest {
         setTerrariumId(terrariumId);
     }
 
+    protected TerrariumRequest() {
+    }
+
     public UserId getUserId() {
         return userId;
     }
