@@ -118,7 +118,15 @@ public class TerrariumService {
         String apikey = null;
 
         if (terrariumRequest.getStatus().equals(Status.ACCEPTED)) {
-            apikey = generateApiKey();
+            Terrarium terrarium = terrariumRepository.findById(terrariumId).orElseThrow();
+            apikey = terrarium.getApiKey();
+
+            if (apikey == null) {
+                apikey = generateApiKey();
+
+                terrarium.setApiKey(apikey);
+                terrariumRepository.save(terrarium);
+            }
         }
         return new GetTerrariumConnectionDto(terrariumRequest.getStatus(), apikey);
     }
