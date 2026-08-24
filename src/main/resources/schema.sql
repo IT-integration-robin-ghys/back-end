@@ -23,5 +23,7 @@ CREATE TABLE IF NOT EXISTS "terrarium_request" (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     terrarium_id UUID NOT NULL,
-    status VARCHAR(255) NOT NULL
+    status VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES "user"(id),
+    FOREIGN KEY (terrarium_id) REFERENCES "terrarium"(id)
 )
