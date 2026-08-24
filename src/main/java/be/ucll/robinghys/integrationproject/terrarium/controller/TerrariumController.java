@@ -51,6 +51,7 @@ public class TerrariumController {
                 .getTerrariumRequestsByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    @PreAuthorize("hasRole('user')")
     @PostMapping("/link/{terrariumRequestId}/accept")
     public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
         return terrariumService.acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(
@@ -58,6 +59,7 @@ public class TerrariumController {
                 SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    @PreAuthorize("hasRole('user')")
     @PostMapping("/link/{terrariumRequestId}/deny")
     public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
         return terrariumService.denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
@@ -66,8 +68,8 @@ public class TerrariumController {
     }
 
     @GetMapping("/link/{terrariumId}")
-    public GetTerrariumConnectionDto getTerrariumRequestESP32(@PathVariable TerrariumId terrariumId) {
-        return terrariumService.getTerrariumConnection(terrariumId);
+    public GetTerrariumConnectionDto getTerrariumRequestESP32(@PathVariable UUID terrariumId) {
+        return terrariumService.getTerrariumConnection(new TerrariumId(terrariumId));
     }
 
 }
