@@ -1,11 +1,16 @@
 package be.ucll.robinghys.integrationproject.general.DBinit;
 
+import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
+
+import java.util.UUID;
+
 import org.springframework.context.annotation.Profile;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRepository;
 import be.ucll.robinghys.integrationproject.user.model.Role;
 import be.ucll.robinghys.integrationproject.user.model.User;
@@ -16,15 +21,18 @@ import jakarta.annotation.PostConstruct;
 @Profile("dev")
 public class DBinitializer {
 
+    private TerrariumRequestRepository terrariumRequestRepository;
     private UserRepository userRepository;
     private TerrariumRepository terrariumRepository;
 
     public DBinitializer(
             UserRepository userRepository,
-            TerrariumRepository terrariumRepository) {
+            TerrariumRepository terrariumRepository,
+            TerrariumRequestRepository terrariumRequestRepository) {
 
         this.userRepository = userRepository;
         this.terrariumRepository = terrariumRepository;
+        this.terrariumRequestRepository = terrariumRequestRepository;
     }
 
     @PostConstruct
@@ -41,9 +49,9 @@ public class DBinitializer {
         userRepository.save(testAdmin);
 
         Terrarium terrarium = new Terrarium("terrarium 1");
-        terrarium.addHumidities(1.0);
-        terrarium.addHumidities(10.0);
-        terrarium.addHumidities(10.9);
+        terrarium.addHumidity(1.0);
+        terrarium.addHumidity(10.0);
+        terrarium.addHumidity(10.9);
 
         terrarium.addTemperature(67.0);
         terrarium.addTemperature(67.0);
@@ -53,6 +61,11 @@ public class DBinitializer {
         terrarium.setUser(testUser);
 
         terrariumRepository.save(terrarium);
+
+        TerrariumRequest terrariumRequest = new TerrariumRequest(UUID.randomUUID(), testUser.getId(),
+                terrarium.getId()); // random id in dbinit, the esp32 will give its own ID in constructor
+
+        terrariumRequestRepository.save(terrariumRequest);
     }
 
 }

@@ -39,6 +39,10 @@ public class Terrarium {
     protected Terrarium() {
     }
 
+    public TerrariumId getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -59,7 +63,7 @@ public class Terrarium {
         return humidities;
     }
 
-    public void addHumidities(Double humidity) {
+    public void addHumidity(Double humidity) {
         this.humidities.add(humidity);
     }
 
