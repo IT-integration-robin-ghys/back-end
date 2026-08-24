@@ -1,7 +1,5 @@
 package be.ucll.robinghys.integrationproject.terrarium.model;
 
-import java.util.UUID;
-
 import be.ucll.robinghys.integrationproject.user.model.UserId;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -34,8 +32,8 @@ public class TerrariumRequest {
 
     private Status status;
 
-    public TerrariumRequest(UUID id, UserId userId, TerrariumId terrariumId) {
-        this.id = new TerrariumRequestId(id);
+    public TerrariumRequest(UserId userId, TerrariumId terrariumId) {
+        this.id = new TerrariumRequestId();
         setUserId(userId);
         setTerrariumId(terrariumId);
         this.status = Status.PENDING;

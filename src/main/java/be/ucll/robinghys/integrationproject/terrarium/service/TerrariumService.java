@@ -1,6 +1,8 @@
 package be.ucll.robinghys.integrationproject.terrarium.service;
 
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
+import be.ucll.robinghys.integrationproject.user.model.User;
+import be.ucll.robinghys.integrationproject.user.service.UserService;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -17,13 +19,15 @@ import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumReposi
 @Validated
 public class TerrariumService {
 
+    private final UserService userService;
     private final TerrariumRequestRepository terrariumRequestRepository;
     private TerrariumRepository terrariumRepository;
 
     public TerrariumService(TerrariumRepository terrariumRepository,
-            TerrariumRequestRepository terrariumRequestRepository) {
+            TerrariumRequestRepository terrariumRequestRepository, UserService userService) {
         this.terrariumRepository = terrariumRepository;
         this.terrariumRequestRepository = terrariumRequestRepository;
+        this.userService = userService;
     }
 
     public List<TerrariumsRequestDto> getTerrariumsByUserEmail(String email) {
@@ -37,9 +41,10 @@ public class TerrariumService {
 
     public ResponseEntity<String> createTerrariumRequest(
             createTerrariumRequestDto createTerrariumRequestDto) {
-        TerrariumRequest terrariumRequest = new TerrariumRequest(createTerrariumRequestDto.id(),
-                createTerrariumRequestDto.userId(),
+        User user = userService.findUserByEmail(createTerrariumRequestDto.email());
+        TerrariumRequest terrariumRequest = new TerrariumRequest(user.getId(),
                 createTerrariumRequestDto.terrariumId());
+
         terrariumRequestRepository.save(terrariumRequest);
 
         return ResponseEntity.ok("success");
