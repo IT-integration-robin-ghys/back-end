@@ -1,6 +1,6 @@
+DROP TABLE IF EXISTS "terrarium_request";
 DROP TABLE IF EXISTS "terrarium";
 DROP TABLE IF EXISTS "user";
-DROP TABLE IF EXISTS "terrarium_request";
 
 CREATE TABLE IF NOT EXISTS "user" (
     id UUID PRIMARY KEY,
