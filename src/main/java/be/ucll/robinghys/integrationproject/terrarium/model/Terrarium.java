@@ -59,7 +59,7 @@ public class Terrarium {
         return humidities;
     }
 
-    public void addHumidities(Double humidity) {
+    public void addHumidity(Double humidity) {
         this.humidities.add(humidity);
     }
 

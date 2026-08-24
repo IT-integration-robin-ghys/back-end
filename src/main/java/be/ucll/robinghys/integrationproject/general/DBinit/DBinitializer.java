@@ -41,9 +41,9 @@ public class DBinitializer {
         userRepository.save(testAdmin);
 
         Terrarium terrarium = new Terrarium("terrarium 1");
-        terrarium.addHumidities(1.0);
-        terrarium.addHumidities(10.0);
-        terrarium.addHumidities(10.9);
+        terrarium.addHumidity(1.0);
+        terrarium.addHumidity(10.0);
+        terrarium.addHumidity(10.9);
 
         terrarium.addTemperature(67.0);
         terrarium.addTemperature(67.0);
