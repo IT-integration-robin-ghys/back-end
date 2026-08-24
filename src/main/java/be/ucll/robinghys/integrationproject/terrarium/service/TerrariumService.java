@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
+import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest;
@@ -52,5 +53,22 @@ public class TerrariumService {
         terrariumRequestRepository.save(terrariumRequest);
 
         return ResponseEntity.ok("success");
+    }
+
+    public List<GetTerrariumRequestDto> getTerrariumRequestsByEmail(String email) {
+        User user = userService.findUserByEmail(email);
+        List<TerrariumRequest> terrariumRequests = terrariumRequestRepository.findAllByUserId(user.getId());
+
+        return terrariumRequests.stream()
+                .map(request -> {
+                    Terrarium terrarium = terrariumRepository
+                            .findById(request.getTerrariumId())
+                            .orElseThrow();
+
+                    return new GetTerrariumRequestDto(
+                            terrarium.getName(),
+                            request.getId());
+                })
+                .toList();
     }
 }
