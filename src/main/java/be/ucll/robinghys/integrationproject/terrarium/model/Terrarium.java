@@ -30,11 +30,14 @@ public class Terrarium {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private String apiKey;
+
     public Terrarium(String name, UUID id) {
         this.id = new TerrariumId(id);
         setName(name);
         this.humidities = new ArrayList<>();
         this.temperatures = new ArrayList<>();
+        this.apiKey = null;
     }
 
     protected Terrarium() {
@@ -74,5 +77,13 @@ public class Terrarium {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

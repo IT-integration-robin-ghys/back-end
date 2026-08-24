@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS "terrarium" (
     temperatures DOUBLE PRECISION [],
     humidities DOUBLE PRECISION [],
     user_id UUID,
+    api_key VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES "user"(id)
 );
 
