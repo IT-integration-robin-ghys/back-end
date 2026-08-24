@@ -38,14 +38,14 @@ public class TerrariumController {
                 .getTerrariumsByUserEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    @PostMapping("/link/create")
+    @PostMapping("/link")
     public ResponseEntity<String> createTerrariumToUser(
             @RequestBody createTerrariumRequestDto createTerrariumRequestDto) {
         return terrariumService.createTerrariumRequest(createTerrariumRequestDto);
     }
 
     @PreAuthorize("hasRole('user')")
-    @GetMapping("/link/get")
+    @GetMapping("/link")
     public List<GetTerrariumRequestDto> getTerrariumRequestsByUserJWT() {
         return terrariumService
                 .getTerrariumRequestsByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -65,7 +65,7 @@ public class TerrariumController {
                 SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
-    @GetMapping("/link/{terrariumId}/get")
+    @GetMapping("/link/{terrariumId}")
     public GetTerrariumConnectionDto getTerrariumRequestESP32(@RequestParam TerrariumId terrariumId) {
         return terrariumService.getTerrariumConnection(terrariumId);
     }
