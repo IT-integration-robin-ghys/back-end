@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import be.ucll.robinghys.integrationproject.user.model.User;
+import be.ucll.robinghys.integrationproject.user.model.UserId;
 import be.ucll.robinghys.integrationproject.user.repository.UserRepository;
 
 @Service
@@ -22,5 +23,10 @@ public class UserService {
 
     public boolean userExistsByEmail(String email) {
         return findUserByEmail(email) != null;
+    }
+
+    public User findUserByUserId(UserId id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
