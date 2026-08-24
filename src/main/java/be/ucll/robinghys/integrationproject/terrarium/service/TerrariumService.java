@@ -4,6 +4,7 @@ import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumReques
 import be.ucll.robinghys.integrationproject.user.model.User;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequestId;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest.Status;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRepository;
 
 @Service
@@ -70,5 +73,35 @@ public class TerrariumService {
                             request.getId());
                 })
                 .toList();
+    }
+
+    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+            String email) {
+        User user = userService.findUserByEmail(email);
+        TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
+                .orElseThrow();
+
+        if (!user.equals(userService.findUserByUserId(terrariumRequest.getUserId()))) {
+            throw new RuntimeException("This terrarium is not connected to the given user.");
+        }
+
+        terrariumRequest.setStatus(Status.ACCEPTED);
+
+        return ResponseEntity.ok("Successfully accepted.");
+    }
+
+    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+            String email) {
+        User user = userService.findUserByEmail(email);
+        TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
+                .orElseThrow();
+
+        if (!user.equals(userService.findUserByUserId(terrariumRequest.getUserId()))) {
+            throw new RuntimeException("This terrarium is not connected to the given user.");
+        }
+
+        terrariumRequest.setStatus(Status.REJECTED);
+
+        return ResponseEntity.ok("Successfully denied.");
     }
 }
