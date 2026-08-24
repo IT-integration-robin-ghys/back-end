@@ -1,7 +1,9 @@
 package be.ucll.robinghys.integrationproject.terrarium.controller;
 
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumId;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequestId;
+import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumConnectionDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.service.TerrariumService;
@@ -61,6 +63,11 @@ public class TerrariumController {
         return terrariumService.denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
                 new TerrariumRequestId(terrariumRequestId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @GetMapping("/link/{terrariumId}/get")
+    public GetTerrariumConnectionDto getTerrariumRequestESP32(@RequestParam TerrariumId terrariumId) {
+        return terrariumService.getTerrariumConnection(terrariumId);
     }
 
 }
