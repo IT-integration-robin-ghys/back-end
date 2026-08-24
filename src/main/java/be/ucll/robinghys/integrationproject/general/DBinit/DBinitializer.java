@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest.Status;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRepository;
 import be.ucll.robinghys.integrationproject.user.model.Role;
 import be.ucll.robinghys.integrationproject.user.model.User;
@@ -62,10 +63,14 @@ public class DBinitializer {
 
         terrariumRepository.save(terrarium);
 
-        TerrariumRequest terrariumRequest = new TerrariumRequest(UUID.randomUUID(), testUser.getId(),
+        TerrariumRequest terrariumRequestPending = new TerrariumRequest(UUID.randomUUID(), testUser.getId(),
                 terrarium.getId()); // random id in dbinit, the esp32 will give its own ID in constructor
-
-        terrariumRequestRepository.save(terrariumRequest);
+        TerrariumRequest terrariumRequestAccepted = new TerrariumRequest(UUID.randomUUID(), testUser.getId(),
+                terrarium.getId()); // random id in dbinit, the esp32 will give its own ID in constructor
+                terrariumRequestAccepted.setStatus(Status.ACCEPTED);
+                
+        terrariumRequestRepository.save(terrariumRequestPending);
+        terrariumRequestRepository.save(terrariumRequestAccepted);
     }
 
 }
