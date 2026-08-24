@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,21 +52,21 @@ public class TerrariumController {
     }
 
     @PostMapping("/link/{terrariumRequestId}/accept")
-    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestId(@RequestParam UUID terrariumRequestId) {
+    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
         return terrariumService.acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(
                 new TerrariumRequestId(terrariumRequestId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @PostMapping("/link/{terrariumRequestId}/deny")
-    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestId(@RequestParam UUID terrariumRequestId) {
+    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
         return terrariumService.denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
                 new TerrariumRequestId(terrariumRequestId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @GetMapping("/link/{terrariumId}")
-    public GetTerrariumConnectionDto getTerrariumRequestESP32(@RequestParam TerrariumId terrariumId) {
+    public GetTerrariumConnectionDto getTerrariumRequestESP32(@PathVariable TerrariumId terrariumId) {
         return terrariumService.getTerrariumConnection(terrariumId);
     }
 
