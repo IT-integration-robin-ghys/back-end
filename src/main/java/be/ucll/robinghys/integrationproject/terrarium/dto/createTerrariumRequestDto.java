@@ -1,9 +1,10 @@
 package be.ucll.robinghys.integrationproject.terrarium.dto;
 
-import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumId;
+import java.util.UUID;
 
 public record createTerrariumRequestDto(
         String email,
-        TerrariumId terrariumId) {
+        UUID terrariumId,
+        String terrariumName) {
 
 }
