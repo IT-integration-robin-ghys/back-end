@@ -22,5 +22,6 @@ CREATE TABLE IF NOT EXISTS "terrarium" (
 CREATE TABLE IF NOT EXISTS "terrarium_request" (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
-    terrarium_id UUID NOT NULL
+    terrarium_id UUID NOT NULL,
+    status VARCHAR(255) NOT NULL
 )
