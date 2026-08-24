@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS "terrarium";
 DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "terrarium_request";
 
 CREATE TABLE IF NOT EXISTS "user" (
     id UUID PRIMARY KEY,
@@ -17,3 +18,9 @@ CREATE TABLE IF NOT EXISTS "terrarium" (
     user_id UUID,
     FOREIGN KEY (user_id) REFERENCES "user"(id)
 );
+
+CREATE TABLE IF NOT EXISTS "terrarium_request" (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    terrarium_id UUID NOT NULL
+)
