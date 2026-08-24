@@ -3,17 +3,20 @@ package be.ucll.robinghys.integrationproject.terrarium.service;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
 import be.ucll.robinghys.integrationproject.user.model.User;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
+import java.util.HexFormat;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
+import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumConnectionDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.model.Terrarium;
+import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumId;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequestId;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequest.Status;
@@ -103,5 +106,20 @@ public class TerrariumService {
         terrariumRequest.setStatus(Status.REJECTED);
 
         return ResponseEntity.ok("Successfully denied.");
+    }
+
+    private String generateApiKey() {
+        byte[] key = KeyGenerators.secureRandom(32).generateKey();
+        return HexFormat.of().formatHex(key);
+    }
+
+    public GetTerrariumConnectionDto getTerrariumConnection(TerrariumId terrariumId) {
+        TerrariumRequest terrariumRequest = terrariumRequestRepository.findByTerrariumId(terrariumId);
+        String apikey = null;
+
+        if (terrariumRequest.getStatus().equals(Status.ACCEPTED)) {
+            apikey = generateApiKey();
+        }
+        return new GetTerrariumConnectionDto(terrariumRequest.getStatus(), apikey);
     }
 }
