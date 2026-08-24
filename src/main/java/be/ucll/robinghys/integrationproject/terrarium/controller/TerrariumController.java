@@ -1,6 +1,7 @@
 package be.ucll.robinghys.integrationproject.terrarium.controller;
 
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
+import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.service.TerrariumService;
 
@@ -36,6 +37,13 @@ public class TerrariumController {
     public ResponseEntity<String> createTerrariumToUser(
             @RequestBody createTerrariumRequestDto createTerrariumRequestDto) {
         return terrariumService.createTerrariumRequest(createTerrariumRequestDto);
+    }
+
+    @PreAuthorize("hasRole('user')")
+    @GetMapping("/link/get")
+    public List<GetTerrariumRequestDto> getTerrariumRequestsByUserJWT() {
+        return terrariumService
+                .getTerrariumRequestsByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
 }
