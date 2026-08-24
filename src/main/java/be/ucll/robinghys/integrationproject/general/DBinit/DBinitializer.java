@@ -37,6 +37,7 @@ public class DBinitializer {
 
         @PostConstruct
         public void initialize() {
+                terrariumRequestRepository.deleteAll();
                 terrariumRepository.deleteAll();
                 userRepository.deleteAll();
 
