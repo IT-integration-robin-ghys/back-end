@@ -1,6 +1,7 @@
 package be.ucll.robinghys.integrationproject.general.DBinit;
 
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
 
@@ -47,7 +48,7 @@ public class DBinitializer {
                 userRepository.save(testUser);
                 userRepository.save(testAdmin);
 
-                Terrarium terrarium = new Terrarium("terrarium 1");
+                Terrarium terrarium = new Terrarium("terrarium 1", UUID.randomUUID());
                 terrarium.addHumidity(1.0);
                 terrarium.addHumidity(10.0);
                 terrarium.addHumidity(10.9);
