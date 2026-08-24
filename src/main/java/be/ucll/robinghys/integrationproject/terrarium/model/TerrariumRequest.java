@@ -14,6 +14,12 @@ import jakarta.persistence.Table;
 @Table(name = "terrarium_request", schema = "public")
 public class TerrariumRequest {
 
+    public enum Status {
+        PENDING,
+        ACCEPTED,
+        REJECTED
+    }
+
     @EmbeddedId
     @AttributeOverride(name = "id", column = @Column(name = "id"))
     private TerrariumRequestId id;
@@ -26,10 +32,13 @@ public class TerrariumRequest {
     @AttributeOverride(name = "id", column = @Column(name = "terrarium_id"))
     private TerrariumId terrariumId;
 
+    private Status status;
+
     public TerrariumRequest(UUID id, UserId userId, TerrariumId terrariumId) {
         this.id = new TerrariumRequestId(id);
         setUserId(userId);
         setTerrariumId(terrariumId);
+        this.status = Status.PENDING;
     }
 
     protected TerrariumRequest() {
@@ -49,5 +58,13 @@ public class TerrariumRequest {
 
     public void setTerrariumId(TerrariumId terrariumId) {
         this.terrariumId = terrariumId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
