@@ -1,7 +1,5 @@
 package be.ucll.robinghys.integrationproject.terrarium.model;
 
-import java.util.UUID;
-
 import be.ucll.robinghys.integrationproject.user.model.UserId;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
@@ -13,6 +11,12 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "terrarium_request", schema = "public")
 public class TerrariumRequest {
+
+    public enum Status {
+        PENDING,
+        ACCEPTED,
+        REJECTED
+    }
 
     @EmbeddedId
     @AttributeOverride(name = "id", column = @Column(name = "id"))
@@ -26,13 +30,20 @@ public class TerrariumRequest {
     @AttributeOverride(name = "id", column = @Column(name = "terrarium_id"))
     private TerrariumId terrariumId;
 
-    public TerrariumRequest(UUID id, UserId userId, TerrariumId terrariumId) {
-        this.id = new TerrariumRequestId(id);
+    private Status status;
+
+    public TerrariumRequest(UserId userId, TerrariumId terrariumId) {
+        this.id = new TerrariumRequestId();
         setUserId(userId);
         setTerrariumId(terrariumId);
+        this.status = Status.PENDING;
     }
 
     protected TerrariumRequest() {
+    }
+
+    public TerrariumRequestId getId() {
+        return id;
     }
 
     public UserId getUserId() {
@@ -49,5 +60,13 @@ public class TerrariumRequest {
 
     public void setTerrariumId(TerrariumId terrariumId) {
         this.terrariumId = terrariumId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

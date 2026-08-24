@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/users")
 public class UserController {
 
+    @SuppressWarnings("unused") //temp because i hate the yellow file
     private final UserService userService;
     private final AuthService authService;
 

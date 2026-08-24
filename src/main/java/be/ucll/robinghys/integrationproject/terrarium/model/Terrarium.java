@@ -2,6 +2,7 @@ package be.ucll.robinghys.integrationproject.terrarium.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import be.ucll.robinghys.integrationproject.user.model.User;
 import jakarta.persistence.EmbeddedId;
@@ -29,11 +30,14 @@ public class Terrarium {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Terrarium(String name) {
-        this.id = new TerrariumId();
+    private String apiKey;
+
+    public Terrarium(String name, UUID id) {
+        this.id = new TerrariumId(id);
         setName(name);
         this.humidities = new ArrayList<>();
         this.temperatures = new ArrayList<>();
+        this.apiKey = null;
     }
 
     protected Terrarium() {
@@ -73,5 +77,13 @@ public class Terrarium {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }
