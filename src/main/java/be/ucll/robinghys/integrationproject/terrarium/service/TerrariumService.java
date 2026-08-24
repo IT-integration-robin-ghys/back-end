@@ -39,11 +39,15 @@ public class TerrariumService {
                 .toList();
     }
 
-    public ResponseEntity<String> createTerrariumRequest(
-            createTerrariumRequestDto createTerrariumRequestDto) {
+    public ResponseEntity<String> createTerrariumRequest(createTerrariumRequestDto createTerrariumRequestDto) {
         User user = userService.findUserByEmail(createTerrariumRequestDto.email());
-        TerrariumRequest terrariumRequest = new TerrariumRequest(user.getId(),
+
+        Terrarium terrarium = new Terrarium(createTerrariumRequestDto.terrariumName(),
                 createTerrariumRequestDto.terrariumId());
+
+        terrariumRepository.save(terrarium);
+
+        TerrariumRequest terrariumRequest = new TerrariumRequest(user.getId(), terrarium.getId());
 
         terrariumRequestRepository.save(terrariumRequest);
 
