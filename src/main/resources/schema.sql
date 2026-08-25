@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS "terrarium_request";
+
 DROP TABLE IF EXISTS "terrarium";
+
 DROP TABLE IF EXISTS "user";
 
 CREATE TABLE IF NOT EXISTS "user" (
@@ -27,4 +29,12 @@ CREATE TABLE IF NOT EXISTS "terrarium_request" (
     status VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES "user"(id),
     FOREIGN KEY (terrarium_id) REFERENCES "terrarium"(id)
-)
+);
+
+CREATE TABLE IF NOT EXISTS "sensor_measurement" (
+    terrarium_id UUID NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    temperature DOUBLE PRECISION NOT NULL,
+    humidity DOUBLE PRECISION NOT NULL,
+    PRIMARY KEY (terrarium_id, timestamp)
+);
