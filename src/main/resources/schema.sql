@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS "terrarium_request";
 
+DROP TABLE IF EXISTS "sensor_measurement";
+
 DROP TABLE IF EXISTS "terrarium";
 
 DROP TABLE IF EXISTS "user";
