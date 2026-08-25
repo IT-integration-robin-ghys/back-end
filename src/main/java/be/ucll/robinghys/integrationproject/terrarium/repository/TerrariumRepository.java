@@ -9,4 +9,6 @@ import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumId;
 
 public interface TerrariumRepository extends JpaRepository<Terrarium, TerrariumId> {
     List<Terrarium> findAllByUserEmail(String email);
+
+    Terrarium findByApiKey(String apikey);
 }
