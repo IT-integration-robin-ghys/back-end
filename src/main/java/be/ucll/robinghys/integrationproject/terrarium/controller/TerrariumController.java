@@ -3,6 +3,7 @@ package be.ucll.robinghys.integrationproject.terrarium.controller;
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumId;
 import be.ucll.robinghys.integrationproject.terrarium.model.TerrariumRequestId;
+import be.ucll.robinghys.integrationproject.sensorMeasurement.Dto.PostSensorMeasurementDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumConnectionDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/terrariums")
@@ -70,6 +72,15 @@ public class TerrariumController {
     @GetMapping("/link/{terrariumId}")
     public GetTerrariumConnectionDto getTerrariumRequestESP32(@PathVariable UUID terrariumId) {
         return terrariumService.getTerrariumConnection(new TerrariumId(terrariumId));
+    }
+
+    @PostMapping("/data/{terrariumId}")
+    public ResponseEntity<String> postSensorMeasurementsEsp32(
+            @PathVariable UUID terrariumId,
+            @RequestBody PostSensorMeasurementDto sensorMeasurements,
+            @RequestHeader("X-API-Key") String apikey) {
+
+        return terrariumService.SaveSensorMeasurement(sensorMeasurements, apikey, new TerrariumId(terrariumId));
     }
 
 }
