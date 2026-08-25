@@ -1,7 +1,5 @@
 package be.ucll.robinghys.integrationproject.terrarium.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import be.ucll.robinghys.integrationproject.user.model.User;
@@ -22,10 +20,6 @@ public class Terrarium {
     @NotBlank(message = "Terrarium name cannot be empty.")
     private String name;
 
-    private List<Double> temperatures;
-
-    private List<Double> humidities;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -35,8 +29,6 @@ public class Terrarium {
     public Terrarium(String name, UUID id) {
         this.id = new TerrariumId(id);
         setName(name);
-        this.humidities = new ArrayList<>();
-        this.temperatures = new ArrayList<>();
         this.apiKey = null;
     }
 
@@ -53,22 +45,6 @@ public class Terrarium {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Double> getTemperatures() {
-        return temperatures;
-    }
-
-    public void addTemperature(Double temperature) {
-        this.temperatures.add(temperature);
-    }
-
-    public List<Double> getHumidities() {
-        return humidities;
-    }
-
-    public void addHumidity(Double humidity) {
-        this.humidities.add(humidity);
     }
 
     public User getUser() {

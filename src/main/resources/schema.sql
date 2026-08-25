@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+
 DROP TABLE IF EXISTS "terrarium_request";
 
 DROP TABLE IF EXISTS "sensor_measurement";
@@ -17,8 +19,6 @@ CREATE TABLE IF NOT EXISTS "user" (
 CREATE TABLE IF NOT EXISTS "terrarium" (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    temperatures DOUBLE PRECISION [],
-    humidities DOUBLE PRECISION [],
     user_id UUID,
     api_key VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES "user"(id)
@@ -40,3 +40,6 @@ CREATE TABLE IF NOT EXISTS "sensor_measurement" (
     humidity DOUBLE PRECISION NOT NULL,
     PRIMARY KEY (terrarium_id, timestamp)
 );
+
+SELECT
+    create_hypertable('sensor_measurement', 'timestamp');

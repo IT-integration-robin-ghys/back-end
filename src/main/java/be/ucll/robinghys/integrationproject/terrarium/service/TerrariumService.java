@@ -1,5 +1,7 @@
 package be.ucll.robinghys.integrationproject.terrarium.service;
 
+import be.ucll.robinghys.integrationproject.sensorMeasurement.Dto.SensorMeasurementDto;
+import be.ucll.robinghys.integrationproject.sensorMeasurement.repository.SensorMeasurementRepository;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
 import be.ucll.robinghys.integrationproject.user.model.User;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
@@ -26,23 +28,38 @@ import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumReposi
 @Validated
 public class TerrariumService {
 
+    private final SensorMeasurementRepository sensorMeasurementRepository;
     private final UserService userService;
     private final TerrariumRequestRepository terrariumRequestRepository;
     private TerrariumRepository terrariumRepository;
 
     public TerrariumService(TerrariumRepository terrariumRepository,
-            TerrariumRequestRepository terrariumRequestRepository, UserService userService) {
+            TerrariumRequestRepository terrariumRequestRepository, UserService userService,
+            SensorMeasurementRepository sensorMeasurementRepository) {
         this.terrariumRepository = terrariumRepository;
         this.terrariumRequestRepository = terrariumRequestRepository;
         this.userService = userService;
+        this.sensorMeasurementRepository = sensorMeasurementRepository;
     }
 
     public List<TerrariumsRequestDto> getTerrariumsByUserEmail(String email) {
         List<Terrarium> terrariums = terrariumRepository.findAllByUserEmail(email);
 
         return terrariums.stream()
-                .map(terrarium -> new TerrariumsRequestDto(
-                        terrarium.getName(), terrarium.getTemperatures(), terrarium.getHumidities()))
+                .map(terrarium -> {
+                    List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                            .findAllByIdTerrariumId(terrarium.getId())
+                            .stream()
+                            .map(measurement -> new SensorMeasurementDto(
+                                    measurement.getTemperature(),
+                                    measurement.getHumidity(),
+                                    measurement.getId().getTimestamp()))
+                            .toList();
+
+                    return new TerrariumsRequestDto(
+                            terrarium.getName(),
+                            measurements);
+                })
                 .toList();
     }
 
