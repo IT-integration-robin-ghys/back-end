@@ -1,6 +1,6 @@
 services:
   integration-project-db:
-    image: postgres:16-alpine
+    image: timescale/timescaledb:latest-pg16
     container_name: integration-project-db
     restart: unless-stopped
     environment:
