@@ -5,6 +5,8 @@ import be.ucll.robinghys.integrationproject.sensorMeasurement.repository.SensorM
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Profile;
@@ -58,14 +60,20 @@ public class DBinitializer {
                 userRepository.save(testAdmin);
 
                 Terrarium terrarium = new Terrarium("terrarium 1", UUID.randomUUID());
-                terrarium.addHumidity(1.0);
-                terrarium.addHumidity(10.0);
-                terrarium.addHumidity(10.9);
+                List<SensorMeasurement> measurements = new ArrayList<>(List.of(
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now(), 67.0, 1.0),
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now().minusMinutes(1), 67.0,
+                                                100.0),
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now().minusMinutes(2), 66.0,
+                                                100.0),
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now().minusMinutes(3), 65.0,
+                                                58.0),
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now().minusMinutes(4), 67.0,
+                                                56.0),
+                                new SensorMeasurement(terrarium.getId(), LocalDateTime.now().minusMinutes(5), 64.0,
+                                                85.0)));
 
-                terrarium.addTemperature(67.0);
-                terrarium.addTemperature(67.0);
-                terrarium.addTemperature(67.0);
-                terrarium.addTemperature(67.0);
+                sensorMeasurementRepository.saveAll(measurements);
 
                 terrarium.setUser(testUser);
 
@@ -80,11 +88,6 @@ public class DBinitializer {
 
                 terrariumRequestRepository.save(terrariumRequestPending);
                 terrariumRequestRepository.save(terrariumRequestAccepted);
-
-                SensorMeasurement sensorMeasurement1 = new SensorMeasurement(terrarium.getId(), LocalDateTime.now(),
-                                42.0, 60.0);
-
-                sensorMeasurementRepository.save(sensorMeasurement1);
         }
 
 }
