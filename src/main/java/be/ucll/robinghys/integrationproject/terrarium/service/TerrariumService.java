@@ -1,10 +1,14 @@
 package be.ucll.robinghys.integrationproject.terrarium.service;
 
+import be.ucll.robinghys.integrationproject.sensorMeasurement.Dto.PostSensorMeasurementDto;
 import be.ucll.robinghys.integrationproject.sensorMeasurement.Dto.SensorMeasurementDto;
+import be.ucll.robinghys.integrationproject.sensorMeasurement.model.SensorMeasurement;
 import be.ucll.robinghys.integrationproject.sensorMeasurement.repository.SensorMeasurementRepository;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
 import be.ucll.robinghys.integrationproject.user.model.User;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
+
+import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
 
@@ -146,5 +150,20 @@ public class TerrariumService {
             }
         }
         return new GetTerrariumConnectionDto(terrariumRequest.getStatus(), apikey);
+    }
+
+    public ResponseEntity<String> SaveSensorMeasurement(PostSensorMeasurementDto postSensorMeasurementDto,
+            String apikey, TerrariumId terrariumId) {
+
+        Terrarium terrariumByApi = terrariumRepository.findByApiKey(apikey);
+        Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (!terrariumByApi.equals(terrariumById)) {
+            throw new RuntimeException("Invalid API key");
+        }
+
+        sensorMeasurementRepository.save(new SensorMeasurement(terrariumId, LocalDateTime.now(),
+                postSensorMeasurementDto.temperature(), postSensorMeasurementDto.Humidity()));
+        return ResponseEntity.ok("Success");
     }
 }
