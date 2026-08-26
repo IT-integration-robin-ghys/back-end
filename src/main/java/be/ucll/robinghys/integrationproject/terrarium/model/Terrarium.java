@@ -26,10 +26,13 @@ public class Terrarium {
 
     private String apiKey;
 
+    private String settings;
+
     public Terrarium(String name, UUID id) {
         this.id = new TerrariumId(id);
         setName(name);
         this.apiKey = null;
+        setSettings(null);
     }
 
     protected Terrarium() {
@@ -61,5 +64,13 @@ public class Terrarium {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public String getSettings() {
+        return settings;
+    }
+
+    public void setSettings(String settings) {
+        this.settings = settings;
     }
 }

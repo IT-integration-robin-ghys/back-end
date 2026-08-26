@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS "terrarium" (
     name VARCHAR(255) NOT NULL,
     user_id UUID,
     api_key VARCHAR(255),
+    settings TEXT,
     FOREIGN KEY (user_id) REFERENCES "user"(id)
 );
 
