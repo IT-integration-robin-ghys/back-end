@@ -73,6 +73,8 @@ public class TerrariumService {
         Terrarium terrarium = new Terrarium(createTerrariumRequestDto.terrariumName(),
                 createTerrariumRequestDto.terrariumId());
 
+        terrarium.setUser(user);
+
         terrariumRepository.save(terrarium);
 
         TerrariumRequest terrariumRequest = new TerrariumRequest(user.getId(), terrarium.getId());

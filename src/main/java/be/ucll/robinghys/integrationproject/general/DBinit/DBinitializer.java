@@ -24,7 +24,7 @@ import be.ucll.robinghys.integrationproject.user.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 
 @Component
-@Profile("dev")
+@Profile("local")
 public class DBinitializer {
 
         private final SensorMeasurementRepository sensorMeasurementRepository;
