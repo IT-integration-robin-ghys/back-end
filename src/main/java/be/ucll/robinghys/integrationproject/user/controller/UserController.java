@@ -1,5 +1,7 @@
 package be.ucll.robinghys.integrationproject.user.controller;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import be.ucll.robinghys.integrationproject.user.dto.UserInput;
 import be.ucll.robinghys.integrationproject.user.service.AuthService;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/users")
@@ -41,6 +44,12 @@ public class UserController {
     @GetMapping("/me")
     public GetUserMeDto getUserMe() {
         return userService.getUserMe(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @GetMapping("/all")
+    public List<GetUserMeDto> getALlUsers() {
+        return userService.getAllUsers();
     }
 
 }

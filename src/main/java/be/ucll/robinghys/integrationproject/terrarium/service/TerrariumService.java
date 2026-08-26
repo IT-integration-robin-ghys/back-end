@@ -5,6 +5,7 @@ import be.ucll.robinghys.integrationproject.sensorMeasurement.Dto.SensorMeasurem
 import be.ucll.robinghys.integrationproject.sensorMeasurement.model.SensorMeasurement;
 import be.ucll.robinghys.integrationproject.sensorMeasurement.repository.SensorMeasurementRepository;
 import be.ucll.robinghys.integrationproject.terrarium.repository.TerrariumRequestRepository;
+import be.ucll.robinghys.integrationproject.user.model.Role;
 import be.ucll.robinghys.integrationproject.user.model.User;
 import be.ucll.robinghys.integrationproject.user.service.UserService;
 
@@ -75,8 +76,22 @@ public class TerrariumService {
     }
 
     public TerrariumsRequestDto getTerrariumByTerrariumId(String email, TerrariumId id) {
+        User user = userService.findUserByEmail(email);
         Terrarium terrarium = terrariumRepository.findById(id).orElseThrow();
         List<Terrarium> terrariums = terrariumRepository.findAllByUserEmail(email);
+
+        if (user.getRole().equals(Role.admin)) {
+            List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                    .findAllByIdTerrariumId(terrarium.getId())
+                    .stream()
+                    .map(measurement -> new SensorMeasurementDto(
+                            measurement.getTemperature(),
+                            measurement.getHumidity(),
+                            measurement.getId().getTimestamp()))
+                    .toList();
+
+            return new TerrariumsRequestDto(terrarium.getId().id(), terrarium.getName(), measurements);
+        }
 
         if (!terrariums.contains(terrarium)) {
             throw new RuntimeException("This terrarium does not belong to this user.");
@@ -136,6 +151,15 @@ public class TerrariumService {
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
                 .orElseThrow();
 
+        if (user.getRole().equals(Role.admin)) {
+            terrariumRequest.setStatus(Status.ACCEPTED);
+
+            terrariumRequestRepository.save(terrariumRequest);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Successfully accepted."));
+        }
+
         if (!user.equals(userService.findUserByUserId(terrariumRequest.getUserId()))) {
             throw new RuntimeException("This terrarium is not connected to the given user.");
         }
@@ -154,6 +178,15 @@ public class TerrariumService {
         User user = userService.findUserByEmail(email);
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
                 .orElseThrow();
+
+        if (user.getRole().equals(Role.admin)) {
+            terrariumRequest.setStatus(Status.REJECTED);
+
+            terrariumRequestRepository.save(terrariumRequest);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Successfully denied."));
+        }
 
         if (!user.equals(userService.findUserByUserId(terrariumRequest.getUserId()))) {
             throw new RuntimeException("This terrarium is not connected to the given user.");
@@ -220,9 +253,22 @@ public class TerrariumService {
     public ResponseEntity<JsonNode> getSettingsWeb(
             TerrariumId terrariumId,
             String email) {
+        User user = userService.findUserByEmail(email);
         List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
 
         Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (user.getRole().equals(Role.admin)) {
+            try {
+                JsonNode settings = objectMapper.readTree(terrariumById.getSettings());
+
+                return ResponseEntity.ok(settings);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Invalid settings JSON", e);
+            }
+        }
 
         if (!terrariumByJwt.contains(terrariumById)) {
             throw new RuntimeException("This terrarium does not belong to this user.");
@@ -256,8 +302,18 @@ public class TerrariumService {
 
     public ResponseEntity<Map<String, String>> SaveTerrariumSettingsWeb(String settings, String email,
             TerrariumId terrariumId) {
+        User user = userService.findUserByEmail(email);
         List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
         Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (user.getRole().equals(Role.admin)) {
+            terrariumById.setSettings(settings);
+
+            terrariumRepository.save(terrariumById);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Success"));
+        }
 
         if (!terrariumByJwt.contains(terrariumById)) {
             throw new RuntimeException("Invalid API key");
@@ -269,5 +325,43 @@ public class TerrariumService {
 
         return ResponseEntity.ok(Map.of(
                 "message", "Success"));
+    }
+
+    public List<GetTerrariumRequestDto> getAllTerrariumRequests() {
+        List<TerrariumRequest> terrariumRequests = terrariumRequestRepository.findAll();
+        return terrariumRequests.stream()
+                .filter(request -> request.getStatus().equals(Status.PENDING))
+                .map(request -> {
+                    Terrarium terrarium = terrariumRepository
+                            .findById(request.getTerrariumId())
+                            .orElseThrow();
+
+                    return new GetTerrariumRequestDto(
+                            terrarium.getName(),
+                            request.getId().id());
+                })
+                .toList();
+    }
+
+    public List<TerrariumsRequestDto> getAllTerrariums() {
+        List<Terrarium> terrariums = terrariumRepository.findAll();
+
+        return terrariums.stream()
+                .map(terrarium -> {
+                    List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                            .findAllByIdTerrariumId(terrarium.getId())
+                            .stream()
+                            .map(measurement -> new SensorMeasurementDto(
+                                    measurement.getTemperature(),
+                                    measurement.getHumidity(),
+                                    measurement.getId().getTimestamp()))
+                            .toList();
+
+                    return new TerrariumsRequestDto(
+                            terrarium.getId().id(),
+                            terrarium.getName(),
+                            measurements);
+                })
+                .toList();
     }
 }
