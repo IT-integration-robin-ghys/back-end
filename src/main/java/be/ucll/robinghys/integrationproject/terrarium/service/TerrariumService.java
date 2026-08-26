@@ -11,6 +11,7 @@ import be.ucll.robinghys.integrationproject.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.keygen.KeyGenerators;
@@ -110,6 +111,7 @@ public class TerrariumService {
         List<TerrariumRequest> terrariumRequests = terrariumRequestRepository.findAllByUserId(user.getId());
 
         return terrariumRequests.stream()
+                .filter(request -> request.getStatus().equals(Status.PENDING))
                 .map(request -> {
                     Terrarium terrarium = terrariumRepository
                             .findById(request.getTerrariumId())
@@ -117,12 +119,13 @@ public class TerrariumService {
 
                     return new GetTerrariumRequestDto(
                             terrarium.getName(),
-                            request.getId());
+                            request.getId().id());
                 })
                 .toList();
     }
 
-    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+    public ResponseEntity<Map<String, String>> acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(
+            TerrariumRequestId id,
             String email) {
         User user = userService.findUserByEmail(email);
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
@@ -134,10 +137,14 @@ public class TerrariumService {
 
         terrariumRequest.setStatus(Status.ACCEPTED);
 
-        return ResponseEntity.ok("Successfully accepted.");
+        terrariumRequestRepository.save(terrariumRequest);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Successfully accepted."));
     }
 
-    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+    public ResponseEntity<Map<String, String>> denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
+            TerrariumRequestId id,
             String email) {
         User user = userService.findUserByEmail(email);
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
@@ -149,7 +156,10 @@ public class TerrariumService {
 
         terrariumRequest.setStatus(Status.REJECTED);
 
-        return ResponseEntity.ok("Successfully denied.");
+        terrariumRequestRepository.save(terrariumRequest);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Successfully denied."));
     }
 
     private String generateApiKey() {
