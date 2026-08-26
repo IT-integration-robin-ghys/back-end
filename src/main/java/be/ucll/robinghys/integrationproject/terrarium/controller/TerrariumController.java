@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -102,7 +105,7 @@ public class TerrariumController {
 
     @PreAuthorize("hasRole('user')")
     @GetMapping("/settings/web/{terrariumId}")
-    public ResponseEntity<String> getSettingsWeb(@PathVariable UUID terrariumId) {
+    public ResponseEntity<JsonNode> getSettingsWeb(@PathVariable UUID terrariumId) {
         return terrariumService.getSettingsWeb(new TerrariumId(terrariumId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
     }
@@ -116,7 +119,7 @@ public class TerrariumController {
 
     @PreAuthorize("hasRole('user')")
     @PostMapping("/settings/web/{terrariumId}")
-    public ResponseEntity<String> postSettingsWeb(@RequestBody String settings, @PathVariable UUID terrariumId) {
+    public ResponseEntity<Map<String, String>> postSettingsWeb(@RequestBody String settings, @PathVariable UUID terrariumId) {
 
         return terrariumService.SaveTerrariumSettingsWeb(settings,
                 SecurityContextHolder.getContext().getAuthentication().getName(), new TerrariumId(terrariumId));
