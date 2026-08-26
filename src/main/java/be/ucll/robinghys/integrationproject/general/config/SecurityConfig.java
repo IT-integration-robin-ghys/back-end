@@ -52,49 +52,39 @@ public class SecurityConfig {
                 return http.build();
         }
 
-        // @Bean
-        // public CorsConfigurationSource corsConfigurationSource(CorsConfig corsConfig)
-        // {
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource(CorsConfig corsConfig) {
 
-        // // Allow all normal cors
-        // CorsConfiguration normalConfig = new CorsConfiguration();
+                // Allow all normal cors
+                CorsConfiguration normalConfig = new CorsConfiguration();
 
-        // normalConfig.setAllowedOrigins(
-        // corsConfig.allowedOrigins()
-        // .stream()
-        // .map(URL::toString)
-        // .toList());
+                normalConfig.setAllowedOrigins(
+                                corsConfig.allowedOrigins()
+                                                .stream()
+                                                .map(URL::toString)
+                                                .toList());
 
-        // normalConfig.setAllowedMethods(List.of(
-        // "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                normalConfig.setAllowedMethods(List.of(
+                                "GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        // normalConfig.setAllowedHeaders(List.of("*"));
+                normalConfig.setAllowedHeaders(List.of("*"));
 
-        // // Endpoints that CORS doesn't check
-        // CorsConfiguration openConfig = new CorsConfiguration();
+                // // Endpoints that CORS doesn't check
+                // CorsConfiguration openConfig = new CorsConfiguration();
 
-        // openConfig.setAllowedOriginPatterns(List.of("*"));
+                // openConfig.setAllowedOriginPatterns(List.of("*"));
 
-        // openConfig.setAllowedMethods(List.of(
-        // "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                // openConfig.setAllowedMethods(List.of(
+                // "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-        // openConfig.setAllowedHeaders(List.of("*"));
+                // openConfig.setAllowedHeaders(List.of("*"));
 
-        // UrlBasedCorsConfigurationSource source = new
-        // UrlBasedCorsConfigurationSource();
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        // // source.registerCorsConfiguration(
-        // // "/terrariums/link",
-        // // openConfig);
+                source.registerCorsConfiguration(
+                                "/**",
+                                normalConfig);
 
-        // source.registerCorsConfiguration(
-        // "/users/testJwtUser",
-        // openConfig);
-
-        // source.registerCorsConfiguration(
-        // "/**",
-        // normalConfig);
-
-        // return source;
-        // }
+                return source;
+        }
 }
