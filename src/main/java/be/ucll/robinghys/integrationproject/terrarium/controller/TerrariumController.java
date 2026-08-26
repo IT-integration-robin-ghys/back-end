@@ -10,6 +10,7 @@ import be.ucll.robinghys.integrationproject.terrarium.dto.TerrariumsRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.service.TerrariumService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,8 @@ public class TerrariumController {
 
     @PreAuthorize("hasRole('user')")
     @PostMapping("/link/{terrariumRequestId}/accept")
-    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
+    public ResponseEntity<Map<String, String>> acceptTerrariumRequestByTerrariumRequestId(
+            @PathVariable UUID terrariumRequestId) {
         return terrariumService.acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(
                 new TerrariumRequestId(terrariumRequestId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
@@ -71,7 +73,8 @@ public class TerrariumController {
 
     @PreAuthorize("hasRole('user')")
     @PostMapping("/link/{terrariumRequestId}/deny")
-    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestId(@PathVariable UUID terrariumRequestId) {
+    public ResponseEntity<Map<String, String>> denyTerrariumRequestByTerrariumRequestId(
+            @PathVariable UUID terrariumRequestId) {
         return terrariumService.denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
                 new TerrariumRequestId(terrariumRequestId),
                 SecurityContextHolder.getContext().getAuthentication().getName());
