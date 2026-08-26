@@ -11,11 +11,15 @@ import be.ucll.robinghys.integrationproject.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import be.ucll.robinghys.integrationproject.terrarium.dto.createTerrariumRequestDto;
 import be.ucll.robinghys.integrationproject.terrarium.dto.GetTerrariumConnectionDto;
@@ -36,14 +40,16 @@ public class TerrariumService {
     private final UserService userService;
     private final TerrariumRequestRepository terrariumRequestRepository;
     private TerrariumRepository terrariumRepository;
+    private final ObjectMapper objectMapper;
 
     public TerrariumService(TerrariumRepository terrariumRepository,
             TerrariumRequestRepository terrariumRequestRepository, UserService userService,
-            SensorMeasurementRepository sensorMeasurementRepository) {
+            SensorMeasurementRepository sensorMeasurementRepository, ObjectMapper objectMapper) {
         this.terrariumRepository = terrariumRepository;
         this.terrariumRequestRepository = terrariumRequestRepository;
         this.userService = userService;
         this.sensorMeasurementRepository = sensorMeasurementRepository;
+        this.objectMapper = objectMapper;
     }
 
     public List<TerrariumsRequestDto> getTerrariumsByUserEmail(String email) {
@@ -61,10 +67,31 @@ public class TerrariumService {
                             .toList();
 
                     return new TerrariumsRequestDto(
+                            terrarium.getId().id(),
                             terrarium.getName(),
                             measurements);
                 })
                 .toList();
+    }
+
+    public TerrariumsRequestDto getTerrariumByTerrariumId(String email, TerrariumId id) {
+        Terrarium terrarium = terrariumRepository.findById(id).orElseThrow();
+        List<Terrarium> terrariums = terrariumRepository.findAllByUserEmail(email);
+
+        if (!terrariums.contains(terrarium)) {
+            throw new RuntimeException("This terrarium does not belong to this user.");
+        }
+
+        List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                .findAllByIdTerrariumId(terrarium.getId())
+                .stream()
+                .map(measurement -> new SensorMeasurementDto(
+                        measurement.getTemperature(),
+                        measurement.getHumidity(),
+                        measurement.getId().getTimestamp()))
+                .toList();
+
+        return new TerrariumsRequestDto(terrarium.getId().id(), terrarium.getName(), measurements);
     }
 
     public ResponseEntity<String> createTerrariumRequest(createTerrariumRequestDto createTerrariumRequestDto) {
@@ -89,6 +116,7 @@ public class TerrariumService {
         List<TerrariumRequest> terrariumRequests = terrariumRequestRepository.findAllByUserId(user.getId());
 
         return terrariumRequests.stream()
+                .filter(request -> request.getStatus().equals(Status.PENDING))
                 .map(request -> {
                     Terrarium terrarium = terrariumRepository
                             .findById(request.getTerrariumId())
@@ -96,12 +124,13 @@ public class TerrariumService {
 
                     return new GetTerrariumRequestDto(
                             terrarium.getName(),
-                            request.getId());
+                            request.getId().id());
                 })
                 .toList();
     }
 
-    public ResponseEntity<String> acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+    public ResponseEntity<Map<String, String>> acceptTerrariumRequestByTerrariumRequestIdAndUserEmail(
+            TerrariumRequestId id,
             String email) {
         User user = userService.findUserByEmail(email);
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
@@ -113,10 +142,14 @@ public class TerrariumService {
 
         terrariumRequest.setStatus(Status.ACCEPTED);
 
-        return ResponseEntity.ok("Successfully accepted.");
+        terrariumRequestRepository.save(terrariumRequest);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Successfully accepted."));
     }
 
-    public ResponseEntity<String> denyTerrariumRequestByTerrariumRequestIdAndUserEmail(TerrariumRequestId id,
+    public ResponseEntity<Map<String, String>> denyTerrariumRequestByTerrariumRequestIdAndUserEmail(
+            TerrariumRequestId id,
             String email) {
         User user = userService.findUserByEmail(email);
         TerrariumRequest terrariumRequest = terrariumRequestRepository.findById(id)
@@ -128,7 +161,10 @@ public class TerrariumService {
 
         terrariumRequest.setStatus(Status.REJECTED);
 
-        return ResponseEntity.ok("Successfully denied.");
+        terrariumRequestRepository.save(terrariumRequest);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Successfully denied."));
     }
 
     private String generateApiKey() {
@@ -181,16 +217,26 @@ public class TerrariumService {
 
     }
 
-    public ResponseEntity<String> getSettingsWeb(TerrariumId terrariumId, String email) {
+    public ResponseEntity<JsonNode> getSettingsWeb(
+            TerrariumId terrariumId,
+            String email) {
         List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
+
         Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
 
         if (!terrariumByJwt.contains(terrariumById)) {
-            throw new RuntimeException("Invalid API key");
+            throw new RuntimeException("This terrarium does not belong to this user.");
         }
 
-        return ResponseEntity.ok(terrariumById.getSettings());
+        try {
+            JsonNode settings = objectMapper.readTree(terrariumById.getSettings());
 
+            return ResponseEntity.ok(settings);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Invalid settings JSON", e);
+        }
     }
 
     public ResponseEntity<String> SaveTerrariumSettingsEsp32(String settings, String apikey, TerrariumId terrariumId) {
@@ -208,7 +254,8 @@ public class TerrariumService {
         return ResponseEntity.ok("Success");
     }
 
-    public ResponseEntity<String> SaveTerrariumSettingsWeb(String settings, String email, TerrariumId terrariumId) {
+    public ResponseEntity<Map<String, String>> SaveTerrariumSettingsWeb(String settings, String email,
+            TerrariumId terrariumId) {
         List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
         Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
 
@@ -220,6 +267,7 @@ public class TerrariumService {
 
         terrariumRepository.save(terrariumById);
 
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(Map.of(
+                "message", "Success"));
     }
 }
