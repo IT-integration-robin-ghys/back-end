@@ -47,7 +47,7 @@ public class TerrariumController {
     }
 
     @PreAuthorize("hasRole('user')")
-    @GetMapping("/link")
+    @GetMapping("/link/me")
     public List<GetTerrariumRequestDto> getTerrariumRequestsByUserJWT() {
         return terrariumService
                 .getTerrariumRequestsByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
