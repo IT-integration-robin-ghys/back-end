@@ -1,5 +1,7 @@
 package be.ucll.robinghys.integrationproject.user.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,5 +36,12 @@ public class UserService {
     public GetUserMeDto getUserMe(String email) {
         User user = findUserByEmail(email);
         return new GetUserMeDto(user.getUsername(), user.getEmail(), user.getRole());
+    }
+
+    public List<GetUserMeDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new GetUserMeDto(user.getUsername(), user.getEmail(), user.getRole()))
+                .toList();
     }
 }
