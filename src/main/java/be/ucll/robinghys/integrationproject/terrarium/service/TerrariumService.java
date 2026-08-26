@@ -61,6 +61,7 @@ public class TerrariumService {
                             .toList();
 
                     return new TerrariumsRequestDto(
+                            terrarium.getId(),
                             terrarium.getName(),
                             measurements);
                 })
