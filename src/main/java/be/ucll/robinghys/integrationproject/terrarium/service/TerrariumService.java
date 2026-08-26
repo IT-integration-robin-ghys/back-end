@@ -76,8 +76,22 @@ public class TerrariumService {
     }
 
     public TerrariumsRequestDto getTerrariumByTerrariumId(String email, TerrariumId id) {
+        User user = userService.findUserByEmail(email);
         Terrarium terrarium = terrariumRepository.findById(id).orElseThrow();
         List<Terrarium> terrariums = terrariumRepository.findAllByUserEmail(email);
+
+        if (user.getRole().equals(Role.admin)) {
+            List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                    .findAllByIdTerrariumId(terrarium.getId())
+                    .stream()
+                    .map(measurement -> new SensorMeasurementDto(
+                            measurement.getTemperature(),
+                            measurement.getHumidity(),
+                            measurement.getId().getTimestamp()))
+                    .toList();
+
+            return new TerrariumsRequestDto(terrarium.getId().id(), terrarium.getName(), measurements);
+        }
 
         if (!terrariums.contains(terrarium)) {
             throw new RuntimeException("This terrarium does not belong to this user.");
