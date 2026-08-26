@@ -328,4 +328,26 @@ public class TerrariumService {
                 })
                 .toList();
     }
+
+    public List<TerrariumsRequestDto> getAllTerrariums() {
+        List<Terrarium> terrariums = terrariumRepository.findAll();
+
+        return terrariums.stream()
+                .map(terrarium -> {
+                    List<SensorMeasurementDto> measurements = sensorMeasurementRepository
+                            .findAllByIdTerrariumId(terrarium.getId())
+                            .stream()
+                            .map(measurement -> new SensorMeasurementDto(
+                                    measurement.getTemperature(),
+                                    measurement.getHumidity(),
+                                    measurement.getId().getTimestamp()))
+                            .toList();
+
+                    return new TerrariumsRequestDto(
+                            terrarium.getId().id(),
+                            terrarium.getName(),
+                            measurements);
+                })
+                .toList();
+    }
 }

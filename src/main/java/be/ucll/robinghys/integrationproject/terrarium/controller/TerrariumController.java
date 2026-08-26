@@ -127,6 +127,13 @@ public class TerrariumController {
     }
 
     @PreAuthorize("hasRole('admin')")
+    @GetMapping("/all")
+    public List<TerrariumsRequestDto> getAllTerrariums() {
+        return terrariumService
+                .getAllTerrariums();
+    }
+
+    @PreAuthorize("hasRole('admin')")
     @GetMapping("/link/all")
     public List<GetTerrariumRequestDto> getAllTerrariumRequests() {
         return terrariumService
