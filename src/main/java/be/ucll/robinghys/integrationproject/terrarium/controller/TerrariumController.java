@@ -40,6 +40,14 @@ public class TerrariumController {
                 .getTerrariumsByUserEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    @PreAuthorize("hasRole('user')")
+    @GetMapping("/{terrariumId}")
+    public TerrariumsRequestDto getTerrariumByUserJWTAndTerrariumId(@PathVariable UUID terrariumId) {
+        return terrariumService
+                .getTerrariumByTerrariumId(SecurityContextHolder.getContext().getAuthentication().getName(),
+                        new TerrariumId(terrariumId));
+    }
+
     @PostMapping("/link")
     public ResponseEntity<String> createTerrariumToUser(
             @RequestBody createTerrariumRequestDto createTerrariumRequestDto) {
