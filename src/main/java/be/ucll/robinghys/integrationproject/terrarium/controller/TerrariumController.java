@@ -83,4 +83,32 @@ public class TerrariumController {
         return terrariumService.SaveSensorMeasurement(sensorMeasurements, apikey, new TerrariumId(terrariumId));
     }
 
+    @GetMapping("/settings/esp32/{terrariumId}")
+    public ResponseEntity<String> getSettingsEsp32(@PathVariable UUID terrariumId,
+            @RequestHeader("X-API-Key") String apikey) {
+        return terrariumService.getSettingsEsp32(new TerrariumId(terrariumId), apikey);
+    }
+
+    @PreAuthorize("hasRole('user')")
+    @GetMapping("/settings/web/{terrariumId}")
+    public ResponseEntity<String> getSettingsWeb(@PathVariable UUID terrariumId) {
+        return terrariumService.getSettingsWeb(new TerrariumId(terrariumId),
+                SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @PostMapping("/settings/esp32/{terrariumId}")
+    public ResponseEntity<String> postSettingsEsp32(@RequestBody String settings, @PathVariable UUID terrariumId,
+            @RequestHeader("X-API-Key") String apikey) {
+
+        return terrariumService.SaveTerrariumSettingsEsp32(settings, apikey, new TerrariumId(terrariumId));
+    }
+
+    @PreAuthorize("hasRole('user')")
+    @PostMapping("/settings/web/{terrariumId}")
+    public ResponseEntity<String> postSettingsWeb(@RequestBody String settings, @PathVariable UUID terrariumId) {
+
+        return terrariumService.SaveTerrariumSettingsWeb(settings,
+                SecurityContextHolder.getContext().getAuthentication().getName(), new TerrariumId(terrariumId));
+    }
+
 }

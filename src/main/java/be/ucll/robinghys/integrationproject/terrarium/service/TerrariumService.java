@@ -160,12 +160,66 @@ public class TerrariumService {
         Terrarium terrariumByApi = terrariumRepository.findByApiKey(apikey);
         Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
 
-        if (!terrariumByApi.equals(terrariumById)) {
+        if (terrariumByApi == null || !terrariumByApi.equals(terrariumById)) {
             throw new RuntimeException("Invalid API key");
         }
 
         sensorMeasurementRepository.save(new SensorMeasurement(terrariumId, LocalDateTime.now(),
                 postSensorMeasurementDto.temperature(), postSensorMeasurementDto.Humidity()));
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<String> getSettingsEsp32(TerrariumId terrariumId, String apikey) {
+        Terrarium terrariumByApi = terrariumRepository.findByApiKey(apikey);
+        Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (terrariumByApi == null || !terrariumByApi.equals(terrariumById)) {
+            throw new RuntimeException("Invalid API key");
+        }
+
+        return ResponseEntity.ok(terrariumById.getSettings());
+
+    }
+
+    public ResponseEntity<String> getSettingsWeb(TerrariumId terrariumId, String email) {
+        List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
+        Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (!terrariumByJwt.contains(terrariumById)) {
+            throw new RuntimeException("Invalid API key");
+        }
+
+        return ResponseEntity.ok(terrariumById.getSettings());
+
+    }
+
+    public ResponseEntity<String> SaveTerrariumSettingsEsp32(String settings, String apikey, TerrariumId terrariumId) {
+        Terrarium terrariumByApi = terrariumRepository.findByApiKey(apikey);
+        Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (terrariumByApi == null || !terrariumByApi.equals(terrariumById)) {
+            throw new RuntimeException("Invalid API key");
+        }
+
+        terrariumById.setSettings(settings);
+
+        terrariumRepository.save(terrariumById);
+
+        return ResponseEntity.ok("Success");
+    }
+
+    public ResponseEntity<String> SaveTerrariumSettingsWeb(String settings, String email, TerrariumId terrariumId) {
+        List<Terrarium> terrariumByJwt = terrariumRepository.findAllByUserEmail(email);
+        Terrarium terrariumById = terrariumRepository.findById(terrariumId).orElseThrow();
+
+        if (!terrariumByJwt.contains(terrariumById)) {
+            throw new RuntimeException("Invalid API key");
+        }
+
+        terrariumById.setSettings(settings);
+
+        terrariumRepository.save(terrariumById);
+
         return ResponseEntity.ok("Success");
     }
 }
