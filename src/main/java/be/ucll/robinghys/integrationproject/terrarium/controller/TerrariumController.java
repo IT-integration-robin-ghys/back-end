@@ -119,10 +119,18 @@ public class TerrariumController {
 
     @PreAuthorize("hasRole('user')")
     @PostMapping("/settings/web/{terrariumId}")
-    public ResponseEntity<Map<String, String>> postSettingsWeb(@RequestBody String settings, @PathVariable UUID terrariumId) {
+    public ResponseEntity<Map<String, String>> postSettingsWeb(@RequestBody String settings,
+            @PathVariable UUID terrariumId) {
 
         return terrariumService.SaveTerrariumSettingsWeb(settings,
                 SecurityContextHolder.getContext().getAuthentication().getName(), new TerrariumId(terrariumId));
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @GetMapping("/link/all")
+    public List<GetTerrariumRequestDto> getAllTerrariumRequests() {
+        return terrariumService
+                .getAllTerrariumRequests();
     }
 
 }

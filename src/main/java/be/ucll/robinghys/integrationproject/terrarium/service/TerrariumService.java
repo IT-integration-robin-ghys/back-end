@@ -270,4 +270,20 @@ public class TerrariumService {
         return ResponseEntity.ok(Map.of(
                 "message", "Success"));
     }
+
+    public List<GetTerrariumRequestDto> getAllTerrariumRequests() {
+        List<TerrariumRequest> terrariumRequests = terrariumRequestRepository.findAll();
+        return terrariumRequests.stream()
+                .filter(request -> request.getStatus().equals(Status.PENDING))
+                .map(request -> {
+                    Terrarium terrarium = terrariumRepository
+                            .findById(request.getTerrariumId())
+                            .orElseThrow();
+
+                    return new GetTerrariumRequestDto(
+                            terrarium.getName(),
+                            request.getId().id());
+                })
+                .toList();
+    }
 }
